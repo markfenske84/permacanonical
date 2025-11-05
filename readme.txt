@@ -4,7 +4,7 @@ Tags: canonical, seo, yoast, permalink, canonical url
 Requires at least: 5.0
 Tested up to: 6.8
 Requires PHP: 7.2
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -94,6 +94,11 @@ Yes. The plugin fully supports pagination for all archive types including blog p
 The canonical URL is rendered server-side when the page initially loads. If your theme uses AJAX to load paginated content and updates the URL with JavaScript (History API), the canonical in the page source will reflect whatever URL was initially requested from the server.
 
 == Changelog ==
+
+= 1.0.4 =
+* Replaced custom updater with plugin-update-checker library
+* Improved compatibility and reliability of automatic updates
+* Better integration with WordPress plugin update system
 
 = 1.0.3 =
 * Added 'Check for Updates' link in plugin row meta
