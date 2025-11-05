@@ -42,8 +42,8 @@ class PermaCanonical_Updater {
         // Clear cache when plugin is activated/deactivated
         add_action('upgrader_process_complete', array($this, 'purge_cache'), 10, 2);
         
-        // Add check for updates link to plugin actions
-        add_filter('plugin_action_links_' . $this->plugin_basename, array($this, 'plugin_action_links'));
+        // Add check for updates link to plugin row meta
+        add_filter('plugin_row_meta', array($this, 'plugin_row_meta'), 10, 2);
         
         // Handle manual update check
         add_action('admin_init', array($this, 'handle_manual_update_check'));
@@ -287,12 +287,17 @@ class PermaCanonical_Updater {
     }
     
     /**
-     * Add action links to plugin row
+     * Add links to plugin row meta
      * 
-     * @param array $links Existing plugin action links
-     * @return array Modified action links
+     * @param array $links Existing plugin row meta links
+     * @param string $file Plugin file path
+     * @return array Modified row meta links
      */
-    public function plugin_action_links($links) {
+    public function plugin_row_meta($links, $file) {
+        if ($file !== $this->plugin_basename) {
+            return $links;
+        }
+        
         $check_url = wp_nonce_url(
             add_query_arg(array(
                 'permacanonical_check_updates' => '1',
