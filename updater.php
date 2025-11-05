@@ -41,6 +41,12 @@ class PermaCanonical_Updater {
         
         // Clear cache when plugin is activated/deactivated
         add_action('upgrader_process_complete', array($this, 'purge_cache'), 10, 2);
+        
+        // Add check for updates link to plugin actions
+        add_filter('plugin_action_links_' . $this->plugin_basename, array($this, 'plugin_action_links'));
+        
+        // Handle manual update check
+        add_action('admin_init', array($this, 'handle_manual_update_check'));
     }
     
     /**
@@ -278,6 +284,89 @@ class PermaCanonical_Updater {
         if ($options['action'] === 'update' && $options['type'] === 'plugin') {
             delete_transient($this->cache_key);
         }
+    }
+    
+    /**
+     * Add action links to plugin row
+     * 
+     * @param array $links Existing plugin action links
+     * @return array Modified action links
+     */
+    public function plugin_action_links($links) {
+        $check_url = wp_nonce_url(
+            add_query_arg(array(
+                'permacanonical_check_updates' => '1',
+            ), admin_url('plugins.php')),
+            'permacanonical_check_updates'
+        );
+        
+        $check_link = sprintf(
+            '<a href="%s">%s</a>',
+            esc_url($check_url),
+            esc_html__('Check for Updates', 'permacanonical')
+        );
+        
+        array_unshift($links, $check_link);
+        
+        return $links;
+    }
+    
+    /**
+     * Handle manual update check request
+     */
+    public function handle_manual_update_check() {
+        if (!isset($_GET['permacanonical_check_updates'])) {
+            return;
+        }
+        
+        if (!current_user_can('update_plugins')) {
+            return;
+        }
+        
+        check_admin_referer('permacanonical_check_updates');
+        
+        // Clear the cache to force a fresh check
+        delete_transient($this->cache_key);
+        delete_site_transient('update_plugins');
+        
+        // Force WordPress to check for updates
+        wp_update_plugins();
+        
+        // Get the update info
+        $remote_info = $this->get_repository_info();
+        
+        if ($remote_info && isset($remote_info->tag_name)) {
+            $remote_version = ltrim($remote_info->tag_name, 'v');
+            
+            if (version_compare($this->version, $remote_version, '<')) {
+                $message = sprintf(
+                    __('Update available! Version %s is available. Please refresh this page to see the update.', 'permacanonical'),
+                    $remote_version
+                );
+                $type = 'success';
+            } else {
+                $message = sprintf(
+                    __('You are running the latest version (%s).', 'permacanonical'),
+                    $this->version
+                );
+                $type = 'success';
+            }
+        } else {
+            $message = __('Could not check for updates. Please try again later.', 'permacanonical');
+            $type = 'error';
+        }
+        
+        add_settings_error(
+            'permacanonical_updates',
+            'permacanonical_update_check',
+            $message,
+            $type
+        );
+        
+        set_transient('settings_errors', get_settings_errors(), 30);
+        
+        wp_redirect(admin_url('plugins.php?settings-updated=1'));
+        exit;
     }
 }
 
