@@ -306,7 +306,7 @@ class PermaCanonical_Updater {
             esc_html__('Check for Updates', 'permacanonical')
         );
         
-        array_unshift($links, $check_link);
+        $links[] = $check_link;
         
         return $links;
     }
