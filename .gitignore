@@ -1,0 +1,23 @@
+# macOS
+.DS_Store
+._*
+
+# IDEs
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Temporary files
+*.log
+*.tmp
+*~
+
+# Node (if you add any build tools later)
+node_modules/
+package-lock.json
+yarn.lock
+
+# WordPress
+wp-cli.local.yml
+

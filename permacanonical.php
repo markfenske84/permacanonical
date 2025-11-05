@@ -16,6 +16,15 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// Define plugin constants
+define('PERMACANONICAL_VERSION', '1.0.1');
+define('PERMACANONICAL_PLUGIN_FILE', __FILE__);
+define('PERMACANONICAL_PLUGIN_BASENAME', plugin_basename(__FILE__));
+
+// GitHub repository information for updates
+define('PERMACANONICAL_GITHUB_USERNAME', 'markfenske84'); // Change to your GitHub username/org
+define('PERMACANONICAL_GITHUB_REPO', 'permacanonical'); // Change to your GitHub repo name
+
 class PermaCanonical {
     
     /**
@@ -150,4 +159,15 @@ class PermaCanonical {
 // Initialize the plugin
 new PermaCanonical();
 
+// Include and initialize the updater
+require_once plugin_dir_path(__FILE__) . 'updater.php';
+
+if (is_admin()) {
+    new PermaCanonical_Updater(
+        PERMACANONICAL_PLUGIN_BASENAME,
+        PERMACANONICAL_GITHUB_USERNAME,
+        PERMACANONICAL_GITHUB_REPO,
+        PERMACANONICAL_VERSION
+    );
+}
 
