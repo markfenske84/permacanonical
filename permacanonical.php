@@ -3,7 +3,7 @@
  * Plugin Name: PermaCanonical
  * Plugin URI: https://webfor.com
  * Description: Forces canonical URL to match the WordPress permalink exactly, overriding any SEO plugins like Yoast SEO. Supports pagination.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: Webfor Agency
  * Author URI: https://webfor.com
  * License: GPL v2 or later
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('PERMACANONICAL_VERSION', '1.0.1');
+define('PERMACANONICAL_VERSION', '1.0.2');
 define('PERMACANONICAL_PLUGIN_FILE', __FILE__);
 define('PERMACANONICAL_PLUGIN_BASENAME', plugin_basename(__FILE__));
 
