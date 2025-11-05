@@ -16,14 +16,19 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Define plugin constants
-define('PERMACANONICAL_VERSION', '1.0.3');
-define('PERMACANONICAL_PLUGIN_FILE', __FILE__);
-define('PERMACANONICAL_PLUGIN_BASENAME', plugin_basename(__FILE__));
-
-// GitHub repository information for updates
-define('PERMACANONICAL_GITHUB_USERNAME', 'markfenske84'); // Change to your GitHub username/org
-define('PERMACANONICAL_GITHUB_REPO', 'permacanonical'); // Change to your GitHub repo name
+// Initialize Plugin Update Checker
+if (!defined('PERMACANONICAL_DISABLE_UPDATES') && file_exists(__DIR__ . '/plugin-update-checker/plugin-update-checker.php')) {
+    require_once __DIR__ . '/plugin-update-checker/plugin-update-checker.php';
+    
+    $permacanonicalUpdateChecker = YahnisElsts\PluginUpdateChecker\v5p4\PucFactory::buildUpdateChecker(
+        'https://github.com/markfenske84/permacanonical',
+        __FILE__,
+        'permacanonical'
+    );
+    
+    // Set the branch to check for updates
+    $permacanonicalUpdateChecker->setBranch('main');
+}
 
 class PermaCanonical {
     
@@ -158,16 +163,3 @@ class PermaCanonical {
 
 // Initialize the plugin
 new PermaCanonical();
-
-// Include and initialize the updater
-require_once plugin_dir_path(__FILE__) . 'updater.php';
-
-if (is_admin()) {
-    new PermaCanonical_Updater(
-        PERMACANONICAL_PLUGIN_BASENAME,
-        PERMACANONICAL_GITHUB_USERNAME,
-        PERMACANONICAL_GITHUB_REPO,
-        PERMACANONICAL_VERSION
-    );
-}
-
