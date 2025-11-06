@@ -145,6 +145,25 @@ For issues and feature requests, please use the GitHub issue tracker or contact 
 
 ## Changelog
 
+### 1.0.5
+- Version bump for stable release
+- Ensured all version references are synchronized
+
+### 1.0.4
+- Replaced custom updater with plugin-update-checker library
+- Improved compatibility and reliability of automatic updates
+- Better integration with WordPress plugin update system
+
+### 1.0.3
+- Added 'Check for Updates' link in plugin row meta
+- Improved update checking user experience
+- Minor code improvements
+
+### 1.0.2
+- Added automatic update functionality via GitHub releases
+- Plugin now checks for updates from GitHub repository
+- Sites will receive update notifications automatically
+
 ### 1.0.1
 - Added full pagination support for all archive types
 - Fixed canonical URLs for paginated blog pages, categories, tags, etc.

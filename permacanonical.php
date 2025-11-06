@@ -3,7 +3,7 @@
  * Plugin Name: PermaCanonical
  * Plugin URI: https://webfor.com
  * Description: Forces canonical URL to match the WordPress permalink exactly, overriding any SEO plugins like Yoast SEO. Supports pagination.
- * Version: 1.0.4
+ * Version: 1.0.5
  * Author: Webfor Agency
  * Author URI: https://webfor.com
  * License: GPL v2 or later
@@ -97,28 +97,71 @@ class PermaCanonical {
         
         $canonical_url = '';
         
+        // Check for pagination first (works for page builder pagination on singular pages)
+        $paged = get_query_var('paged');
+        if (!$paged) {
+            $paged = get_query_var('page');
+        }
+        $paged = intval($paged);
+        
         if (is_singular()) {
             // For single posts, pages, and custom post types
             $canonical_url = get_permalink();
+            
+            // Handle pagination on singular pages (e.g., page builder blog modules)
+            if ($paged > 1) {
+                // For paginated singular pages, append /page/X/
+                $canonical_url = trailingslashit($canonical_url) . 'page/' . $paged . '/';
+            }
         } elseif (is_front_page()) {
             // For the front page
             $canonical_url = home_url('/');
+            
+            // Handle pagination on front page
+            if ($paged > 1) {
+                $canonical_url = trailingslashit($canonical_url) . 'page/' . $paged . '/';
+            }
         } elseif (is_home()) {
             // For the blog page
             $canonical_url = get_permalink(get_option('page_for_posts'));
+            
+            // Handle pagination on blog page
+            if ($paged > 1) {
+                $canonical_url = trailingslashit($canonical_url) . 'page/' . $paged . '/';
+            }
         } elseif (is_category()) {
             // For category archives
             $canonical_url = get_category_link(get_queried_object_id());
+            
+            // Handle pagination on category archives
+            if ($paged > 1) {
+                $canonical_url = trailingslashit($canonical_url) . 'page/' . $paged . '/';
+            }
         } elseif (is_tag()) {
             // For tag archives
             $canonical_url = get_tag_link(get_queried_object_id());
+            
+            // Handle pagination on tag archives
+            if ($paged > 1) {
+                $canonical_url = trailingslashit($canonical_url) . 'page/' . $paged . '/';
+            }
         } elseif (is_tax()) {
             // For custom taxonomy archives
             $term = get_queried_object();
             $canonical_url = get_term_link($term);
+            
+            // Handle pagination on taxonomy archives
+            if ($paged > 1) {
+                $canonical_url = trailingslashit($canonical_url) . 'page/' . $paged . '/';
+            }
         } elseif (is_author()) {
             // For author archives
             $canonical_url = get_author_posts_url(get_queried_object_id());
+            
+            // Handle pagination on author archives
+            if ($paged > 1) {
+                $canonical_url = trailingslashit($canonical_url) . 'page/' . $paged . '/';
+            }
         } elseif (is_date()) {
             // For date archives
             if (is_day()) {
@@ -128,24 +171,26 @@ class PermaCanonical {
             } elseif (is_year()) {
                 $canonical_url = get_year_link(get_query_var('year'));
             }
+            
+            // Handle pagination on date archives
+            if ($paged > 1) {
+                $canonical_url = trailingslashit($canonical_url) . 'page/' . $paged . '/';
+            }
         } elseif (is_post_type_archive()) {
             // For custom post type archives
             $canonical_url = get_post_type_archive_link(get_query_var('post_type'));
+            
+            // Handle pagination on post type archives
+            if ($paged > 1) {
+                $canonical_url = trailingslashit($canonical_url) . 'page/' . $paged . '/';
+            }
         } elseif (is_search()) {
             // For search results
             $canonical_url = get_search_link();
-        }
-        
-        // Handle pagination for all archive types (blog, category, tag, author, date, post type, search)
-        if (is_paged()) {
-            $paged = get_query_var('paged');
-            if (!$paged) {
-                $paged = get_query_var('page');
-            }
             
+            // Handle pagination on search results
             if ($paged > 1) {
-                // Use get_pagenum_link to get the proper paginated URL
-                $canonical_url = get_pagenum_link($paged);
+                $canonical_url = trailingslashit($canonical_url) . 'page/' . $paged . '/';
             }
         }
         
